@@ -21,9 +21,101 @@ Sistema de gestión hotelera desarrollado con arquitectura de dos capas: una **A
 | SQL Server / SQL Server Express | Motor de base de datos relacional |
 | T-SQL | Definición del esquema de tablas |
 
-### Frontend (MVC)
-- Carpeta `FRONT_HOTEL_MVC` incluida en la solución (interfaz que consume la API REST)
+## 🖥️ Frontend — Servidor de Aplicaciones
 
+Este repositorio incluye **dos implementaciones del frontend**, ambas consumen la misma API REST y reflejan la lógica del modelo relacional de la base de datos.
+
+---
+
+### 🌐 Frontend SPA (Single Page Application)
+
+> Ubicación: `API REST CONFIGURACION/wwwroot/`
+
+Interfaz de usuario construida con **HTML5, CSS3 y JavaScript puro**, servida directamente desde el proyecto de la API mediante `UseStaticFiles()`.
+
+**¿Cómo funciona?**  
+El navegador carga `index.html` una sola vez. Toda la navegación y actualización de contenido ocurre dinámicamente mediante `fetch()` al API REST, sin recargar la página.
+
+**Características:**
+- Inicio de sesión con control de roles (`Administrador`, `Supervisor`, `Recepcionista`)
+- Sidebar dinámico con navegación entre módulos sin recarga
+- CRUD completo para: Hoteles, Habitaciones, Tipos de Habitación, Clientes, Empleados, Reservaciones y Usuarios
+- Listas desplegables que resuelven las llaves foráneas (FK) del modelo relacional en tiempo real
+- Tema oscuro con variables CSS personalizadas
+- Estado de sesión gestionado en `sessionStorage`
+
+**Archivos principales:**
+
+| Archivo | Descripción |
+|---|---|
+| `index.html` | Estructura base de la aplicación y todos sus módulos |
+| `style.css` | Estilos globales con variables CSS y tema oscuro |
+| `app.js` | Lógica de navegación, fetch a la API y renderizado dinámico del DOM |
+
+---
+
+### 🏗️ Frontend MVC (Model–View–Controller)
+
+> Ubicación: `HotelMVC/`
+
+Proyecto independiente de **ASP.NET Core 8.0** con arquitectura MVC clásica usando **Razor Pages**. Las páginas se generan en el servidor con C# y se envían al navegador como HTML completo.
+
+**¿Cómo funciona?**  
+Cada petición del navegador llega a un controlador C#, que consulta la API REST mediante `HttpClient`, deserializa el JSON a modelos tipados y los pasa a una vista Razor que genera el HTML final.
+
+**Características:**
+- Autenticación con sesiones HTTP de ASP.NET (`ISession`)
+- Vistas Razor (`.cshtml`) con Tag Helpers para formularios tipados
+- CRUD completo para los mismos 7 módulos del SPA
+- Formularios con `<select>` dinámicos para todas las relaciones FK
+- Redirección automática al login si no hay sesión activa
+- Compatible con publicación en IIS
+
+**Estructura del proyecto:**
+
+```
+HotelMVC/
+├── Controllers/          # Lógica de cada módulo (C#)
+├── Models/Models.cs      # Clases que mapean las entidades de la API
+├── Views/                # Plantillas Razor (.cshtml)
+│   ├── Shared/
+│   │   └── _Layout.cshtml    # Sidebar, topbar y navegación global
+│   ├── Home/             # Login y Dashboard
+│   ├── Cliente/          # Index, Crear, Editar
+│   ├── Hotel/
+│   ├── Habitacion/
+│   ├── Empleado/
+│   ├── Reservacion/
+│   └── Usuario/
+├── wwwroot/css/site.css  # Estilos (dark theme)
+├── Program.cs            # Configuración de servicios y pipeline
+└── appsettings.json      # URL de la API REST ← configurar antes de publicar
+```
+
+**Configuración rápida:**
+
+Antes de ejecutar, apunta el proyecto a tu API REST editando `appsettings.json`:
+
+```json
+{
+  "ApiSettings": {
+    "BaseUrl": "http://<IP_DEL_SERVIDOR_API>:<PUERTO>/api"
+  }
+}
+```
+
+---
+
+### ⚖️ SPA vs MVC — Diferencias clave
+
+| | SPA | MVC |
+|---|---|---|
+| HTML generado en | Navegador (JS) | Servidor (C# + Razor) |
+| Navegación | Sin recarga de página | Recarga completa |
+| Estado del usuario | `sessionStorage` | Sesión HTTP de ASP.NET |
+| Vistas | `index.html` + `app.js` | Archivos `.cshtml` por módulo |
+| Comunicación con API | `fetch()` desde el navegador | `HttpClient` desde C# |
+| Despliegue | Junto con la API en IIS | Proyecto IIS independiente |
 ### Herramientas de Desarrollo
 - Visual Studio 2022 (solución `.slnx`)
 - Postman / Swagger UI para pruebas de endpoints
@@ -69,37 +161,6 @@ HOTEL_MVC_v1/
 └── FRONT_HOTEL_MVC/                      # Frontend MVC (consume la API)
 ```
 
----
-
----
-
-## 📁 Estructura del fRONT
-
-```
-HotelMVC/
-├── Controllers/          ← Controladores MVC (C#)
-│   ├── HomeController.cs      (Login, Dashboard, Logout)
-│   ├── ClienteController.cs
-│   ├── HotelController.cs
-│   ├── HabitacionController.cs
-│   ├── EmpleadoController.cs
-│   ├── ReservacionController.cs
-│   └── UsuarioController.cs
-├── Models/
-│   └── Models.cs         ← Clases que mapean los datos de la API
-├── Views/                ← Vistas Razor (.cshtml)
-│   ├── Shared/_Layout.cshtml  (sidebar + topbar compartido)
-│   ├── Home/Login.cshtml
-│   ├── Home/Index.cshtml (Dashboard)
-│   └── [Cliente|Hotel|Habitacion|Empleado|Reservacion|Usuario]/
-│       ├── Index.cshtml   (tabla con datos)
-│       ├── Crear.cshtml   (formulario nuevo)
-│       └── Editar.cshtml  (formulario editar)
-├── wwwroot/css/site.css  ← Estilos dark theme
-├── Program.cs
-├── appsettings.json      ← URL de la API aquí
-└── HotelMVC.csproj
-```
 
 ---
 

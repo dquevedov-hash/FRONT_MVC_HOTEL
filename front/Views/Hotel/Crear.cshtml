@@ -1,0 +1,23 @@
+@model HotelMVC.Models.Hotel
+@{ ViewData["Title"] = "Nuevo Hotel"; }
+
+<div class="form-card">
+    <form asp-action="Crear" method="post">
+        <div class="form-group">
+            <label asp-for="Nombre">Nombre</label>
+            <input asp-for="Nombre" class="form-control" placeholder="Nombre del hotel" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Direccion">Dirección</label>
+            <input asp-for="Direccion" class="form-control" placeholder="Dirección" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Telefono">Teléfono</label>
+            <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

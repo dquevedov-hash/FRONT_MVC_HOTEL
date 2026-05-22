@@ -1,0 +1,131 @@
+@{
+    ViewData["Title"] = "Reporte de Ocupación";
+    var datosJson = ViewBag.DatosJson as string ?? "null";
+}
+
+<div class="rpt-page">
+
+  <!-- Encabezado del reporte -->
+  <div class="rpt-page-header">
+    <div>
+      <div class="rpt-breadcrumb">
+        <a asp-action="Index">Reportes</a> / Ocupación
+      </div>
+      <h2 class="rpt-page-title">📊 Reporte de Ocupación</h2>
+      <p class="rpt-page-desc">Estado actual de habitaciones por hotel — datos en tiempo real.</p>
+    </div>
+    <div class="rpt-actions">
+      <button class="btn btn-ghost btn-sm" onclick="imprimirReporte()">🖨 Imprimir</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportarCSV()">⬇ CSV</button>
+    </div>
+  </div>
+
+  <!-- Área de contenido del reporte -->
+  <div id="rptContenido">
+    <div class="rpt-loading-msg">⏳ Cargando datos del reporte...</div>
+  </div>
+
+  <!-- Pie del reporte -->
+  <div class="rpt-footer" id="rptPie" style="display:none">
+    Generado: <span id="rptFecha">—</span> ·
+    Usuario: <strong>@Context.Session.GetString("Username")</strong> ·
+    Rol: @Context.Session.GetString("Rol")
+  </div>
+</div>
+
+<script>
+const DATOS_RAW = @Html.Raw(datosJson);
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!DATOS_RAW) {
+    document.getElementById('rptContenido').innerHTML =
+      '<div class="rpt-error">❌ No se pudieron cargar los datos.</div>';
+    return;
+  }
+
+  renderReporte(DATOS_RAW);
+});
+
+function renderReporte(d) {
+  const kpis = [
+    { lbl:'Total Habitaciones',  val: d.totalHabitaciones,    color:'var(--text)' },
+    { lbl:'Disponibles',         val: d.totalDisponibles,     color:'var(--success)' },
+    { lbl:'Ocupadas',            val: d.totalOcupadas,        color:'var(--danger)' },
+    { lbl:'Mantenimiento',       val: d.totalMantenimiento,   color:'var(--warn)' },
+    { lbl:'% Ocupación Global',  val: d.porcentajeOcupacionGlobal + '%', color:'var(--accent)' },
+  ];
+
+  const porHotel = (d.porHotel || []).map(h => `
+    <tr>
+      <td class="td-name">${h.nombre}</td>
+      <td>${h.totalHabitaciones}</td>
+      <td><span class="badge badge-ok">${h.disponibles}</span></td>
+      <td><span class="badge badge-ocu">${h.ocupadas}</span></td>
+      <td><span class="badge badge-man">${h.mantenimiento}</span></td>
+      <td>
+        <div class="rpt-bar-wrap">
+          <div class="rpt-bar" style="width:${Math.min(h.porcentajeOcupacion, 100)}px"></div>
+          <span>${h.porcentajeOcupacion}%</span>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  const detalleHabs = (d.porHotel || []).flatMap(h =>
+    (h.habitaciones || []).map(hab => `
+      <tr>
+        <td class="td-id">${hab.idHabitacion}</td>
+        <td class="td-name">${hab.numero}</td>
+        <td class="td-muted">${h.nombre}</td>
+        <td class="td-muted">${hab.tipo}</td>
+        <td><span class="badge ${{Disponible:'badge-ok',Ocupada:'badge-ocu',Mantenimiento:'badge-man'}[hab.estado]||''}">${hab.estado}</span></td>
+      </tr>`)
+  ).join('');
+
+  document.getElementById('rptContenido').innerHTML = `
+    <div class="rpt-kpi-grid">
+      ${kpis.map(k => `
+        <div class="kpi-card">
+          <div class="kpi-val" style="color:${k.color}">${k.val}</div>
+          <div class="kpi-lbl">${k.lbl}</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="rpt-section-title" style="margin-bottom:10px">Ocupación por Hotel</div>
+    <div class="rpt-table-wrap" style="margin-bottom:28px">
+      <table>
+        <thead>
+          <tr><th>Hotel</th><th>Total</th><th>Disponibles</th><th>Ocupadas</th><th>Mant.</th><th>% Ocup.</th></tr>
+        </thead>
+        <tbody>${porHotel}</tbody>
+      </table>
+    </div>
+
+    <div class="rpt-section-title" style="margin-bottom:10px">Detalle de todas las habitaciones</div>
+    <div class="rpt-table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Número</th><th>Hotel</th><th>Tipo</th><th>Estado</th></tr></thead>
+        <tbody>${detalleHabs}</tbody>
+      </table>
+    </div>`;
+
+  document.getElementById('rptFecha').textContent = new Date(d.fechaGeneracion).toLocaleString('es-GT');
+  document.getElementById('rptPie').style.display = 'block';
+}
+
+function imprimirReporte() { window.print(); }
+
+function exportarCSV() {
+  const tbl = document.querySelector('#rptContenido table');
+  if (!tbl) return alert('Sin tabla para exportar.');
+  const rows = [...tbl.querySelectorAll('tr')].map(tr =>
+    [...tr.querySelectorAll('th,td')].map(c => `"${c.innerText.replace(/"/g,'""')}"`).join(',')
+  );
+  const blob = new Blob(['\uFEFF' + rows.join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'reporte_ocupacion_' + Date.now() + '.csv';
+  a.click();
+}
+</script>
+
+<style>@@media print { .rpt-actions, .sidebar, .topbar, .nav { display:none!important; } .rpt-page { padding:0; } }</style>

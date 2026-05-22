@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-grid">
+    <a class="dash-card" asp-controller="Hotel" asp-action="Index">
+        <div class="dash-icon">🏨</div>
+        <div class="dash-label">Hoteles</div>
+    </a>
+    <a class="dash-card" asp-controller="Habitacion" asp-action="Index">
+        <div class="dash-icon">🛏</div>
+        <div class="dash-label">Habitaciones</div>
+    </a>
+    <a class="dash-card" asp-controller="Cliente" asp-action="Index">
+        <div class="dash-icon">👤</div>
+        <div class="dash-label">Clientes</div>
+    </a>
+    <a class="dash-card" asp-controller="Empleado" asp-action="Index">
+        <div class="dash-icon">👔</div>
+        <div class="dash-label">Empleados</div>
+    </a>
+    <a class="dash-card" asp-controller="Reservacion" asp-action="Index">
+        <div class="dash-icon">📋</div>
+        <div class="dash-label">Reservaciones</div>
+    </a>
+    <a class="dash-card" asp-controller="Usuario" asp-action="Index">
+        <div class="dash-icon">🔑</div>
+        <div class="dash-label">Usuarios</div>
+    </a>
+</div>

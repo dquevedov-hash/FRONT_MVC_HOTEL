@@ -1,0 +1,34 @@
+@model List<HotelMVC.Models.Hotel>
+@{
+    ViewData["Title"] = "Hoteles";
+}
+
+<div class="section-header">
+    <a asp-action="Crear" class="btn btn-primary">+ Nuevo Hotel</a>
+</div>
+
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var h in Model)
+            {
+                <tr>
+                    <td>@h.IdHotel</td>
+                    <td>@h.Nombre</td>
+                    <td>@h.Direccion</td>
+                    <td>@h.Telefono</td>
+                    <td class="actions">
+                        <a asp-action="Editar" asp-route-id="@h.IdHotel" class="btn btn-sm btn-edit">Editar</a>
+                        <form asp-action="Eliminar" asp-route-id="@h.IdHotel" method="post" style="display:inline"
+                              onsubmit="return confirm('¿Eliminar hotel @h.Nombre?')">
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,42 @@
+@model HotelMVC.Models.Usuario
+@{
+    ViewData["Title"] = "Editar Usuario";
+    var empleados = ViewBag.Empleados as List<HotelMVC.Models.Empleado> ?? new();
+    var roles     = ViewBag.Roles     as List<string> ?? new();
+}
+
+<div class="form-card">
+    <form asp-action="Editar" asp-route-id="@Model.IdUsuario" method="post">
+        <input type="hidden" asp-for="IdUsuario" />
+        <div class="form-group">
+            <label asp-for="IdEmpleado">Empleado</label>
+            <select asp-for="IdEmpleado" class="form-control">
+                @foreach (var e in empleados)
+                {
+                    <option value="@e.IdEmpleado">@e.Nombre @e.Apellido</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Username">Username</label>
+            <input asp-for="Username" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Password">Contraseña</label>
+            <input asp-for="Password" type="password" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Rol">Rol</label>
+            <select asp-for="Rol" class="form-control">
+                @foreach (var r in roles)
+                {
+                    <option value="@r">@r</option>
+                }
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

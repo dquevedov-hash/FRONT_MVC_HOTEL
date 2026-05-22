@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- https://go.microsoft.com/fwlink/?LinkID=208121. -->
-<Project>
-  <PropertyGroup>
-    <_PublishTargetUrl>C:\Api\MIAPI</_PublishTargetUrl>
-    <History>True|2026-05-15T21:03:20.4792133Z||;True|2026-05-15T15:02:29.9433281-06:00||;True|2026-05-15T15:02:07.4674696-06:00||;True|2026-05-15T14:57:03.0249351-06:00||;True|2026-05-14T19:59:53.6125380-06:00||;True|2026-05-14T19:44:07.5297070-06:00||;True|2026-05-14T19:24:43.4613226-06:00||;True|2026-05-14T19:17:28.4001117-06:00||;True|2026-05-14T18:51:21.0660112-06:00||;</History>
-    <LastFailureDetails />
-  </PropertyGroup>
-</Project>

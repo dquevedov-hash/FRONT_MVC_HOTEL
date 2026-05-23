@@ -4,7 +4,7 @@ La versión **2.1** incluye mejoras visuales en la interfaz de usuario del Front
 
 ## 🎨 Mejoras Implementadas
 
-- Se realizaron mejoras visuales en el **Dashboard** para optimizar la presentación de la información y la experiencia del usuario.
+- Se realizaron mejoras visuales en el **Dashboard** para optimizar la presentación de la información.
 
 - Se actualizaron las **KPIs** con un diseño más claro y organizado para facilitar la visualización de datos importantes.
 

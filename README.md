@@ -1,3 +1,17 @@
+# 🛠️ Notas de Actualización - Versión 2.1
+
+La versión **2.1** incluye mejoras visuales en la interfaz de usuario del Front-End.
+
+## 🎨 Mejoras Implementadas
+
+- Se realizaron mejoras visuales en el **Dashboard** para optimizar la presentación de la información y la experiencia del usuario.
+
+- Se actualizaron las **KPIs** con un diseño más claro y organizado para facilitar la visualización de datos importantes.
+
+- Se incorporó un sistema de colores personalizados por usuario, permitiendo una mejor identificación visual dentro de la aplicación.
+
+---
+
 # 🏨 Hotel MVC — Sistema de Gestión Hotelera
 
 Sistema de gestión hotelera desarrollado con arquitectura de dos capas: una **API REST** construida en ASP.NET Core (.NET 10) como backend, y un **frontend MVC** separado que consume dicha API. El proyecto permite administrar reservaciones, habitaciones, clientes, empleados y más, a través de endpoints RESTful documentados con Swagger.

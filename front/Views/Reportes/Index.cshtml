@@ -1,0 +1,167 @@
+@{
+    ViewData["Title"] = "Reportes";
+    var rol = ViewBag.Rol as string ?? "";
+    bool esAdmin      = rol == "Administrador";
+    bool esSupervisor = rol == "Supervisor";
+}
+
+<div class="rpt-catalog">
+
+  <div class="rpt-catalog-header">
+    <div class="rpt-catalog-title">📁 Centro de Reportes</div>
+    <div class="rpt-catalog-sub">
+      Reportes disponibles para el rol <span class="rol-pill @(rol.ToLower())">@rol</span>
+    </div>
+  </div>
+
+  <div class="rpt-catalog-grid">
+
+    @* ── Ocupación: Admin + Supervisor ── *@
+    @if (esAdmin || esSupervisor)
+    {
+      <a class="rpt-card" asp-action="Ocupacion">
+        <div class="rpt-card-icon">📊</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Reporte de Ocupación</div>
+          <div class="rpt-card-desc">Estado de habitaciones por hotel — disponibles, ocupadas y en mantenimiento.</div>
+          <div class="rpt-card-tags">
+            <span class="tag">Tiempo real</span>
+            <span class="tag">Por hotel</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+    }
+
+    @* ── Ingresos: Admin + Supervisor ── *@
+    @if (esAdmin || esSupervisor)
+    {
+      <a class="rpt-card" asp-action="Ingresos">
+        <div class="rpt-card-icon">💰</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Reporte de Ingresos</div>
+          <div class="rpt-card-desc">Ingresos totales y desglosados por hotel con filtro de fechas.</div>
+          <div class="rpt-card-tags">
+            <span class="tag">Filtro fecha</span>
+            <span class="tag">Por hotel</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+    }
+
+    @* ── Reservaciones: Admin + Supervisor ── *@
+    @if (esAdmin || esSupervisor)
+    {
+      <a class="rpt-card" asp-action="Reservaciones">
+        <div class="rpt-card-icon">📋</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Listado de Reservaciones</div>
+          <div class="rpt-card-desc">Todas las reservaciones con cliente, hotel, fechas y totales.</div>
+          <div class="rpt-card-tags">
+            <span class="tag">Filtro fecha</span>
+            <span class="tag">Exportable</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+    }
+
+    @* ── Clientes: Admin + Supervisor ── *@
+    @if (esAdmin || esSupervisor)
+    {
+      <a class="rpt-card" asp-action="Clientes">
+        <div class="rpt-card-icon">👤</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Reporte de Clientes</div>
+          <div class="rpt-card-desc">Listado de clientes con historial de reservaciones y gasto total.</div>
+          <div class="rpt-card-tags">
+            <span class="tag">Historial</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+    }
+
+    @* ── Empleados: solo Admin ── *@
+    @if (esAdmin)
+    {
+      <a class="rpt-card" asp-action="Empleados">
+        <div class="rpt-card-icon">👔</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Reporte de Empleados</div>
+          <div class="rpt-card-desc">Nómina de empleados por puesto. Solo para Administradores.</div>
+          <div class="rpt-card-tags">
+            <span class="tag tag-admin">Solo Admin</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+
+      <a class="rpt-card" asp-action="Habitaciones">
+        <div class="rpt-card-icon">🛏</div>
+        <div class="rpt-card-body">
+          <div class="rpt-card-title">Inventario de Habitaciones</div>
+          <div class="rpt-card-desc">Inventario completo de habitaciones por hotel y tipo de habitación.</div>
+          <div class="rpt-card-tags">
+            <span class="tag tag-admin">Solo Admin</span>
+            <span class="tag">Por hotel</span>
+          </div>
+        </div>
+        <div class="rpt-card-arrow">→</div>
+      </a>
+    }
+
+  </div>
+</div>
+
+<style>
+/* Catálogo de reportes */
+.rpt-catalog { max-width: 900px; }
+.rpt-catalog-header { margin-bottom: 28px; }
+.rpt-catalog-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.rpt-catalog-sub   { font-size: 12px; color: var(--muted2); margin-top: 4px; }
+.rol-pill {
+  display: inline-block; padding: 1px 10px; border-radius: 20px;
+  font-size: 11px; border: 1px solid currentColor;
+}
+.rol-pill.administrador { color: var(--rol-admin); }
+.rol-pill.supervisor    { color: var(--rol-supervisor); }
+.rol-pill.recepcionista { color: var(--rol-recepcion); }
+
+.rpt-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 14px;
+}
+.rpt-card {
+  display: flex; align-items: center; gap: 18px;
+  padding: 20px; text-decoration: none;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text); cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative; overflow: hidden;
+}
+.rpt-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--accent); opacity: 0;
+  transition: opacity 0.2s;
+}
+.rpt-card:hover { border-color: var(--border2); transform: translateX(3px); }
+.rpt-card:hover::before { opacity: 1; }
+.rpt-card-icon { font-size: 28px; flex-shrink: 0; width: 44px; text-align: center; opacity: 0.8; }
+.rpt-card-body { flex: 1; }
+.rpt-card-title { font-family: var(--font-head); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.rpt-card-desc  { font-size: 11px; color: var(--muted2); line-height: 1.5; margin-bottom: 8px; }
+.rpt-card-tags  { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+  color: var(--muted2);
+}
+.tag-admin { background: rgba(232,255,71,0.08); border-color: rgba(232,255,71,0.2); color: var(--rol-admin); }
+.rpt-card-arrow { font-size: 18px; color: var(--muted); transition: color 0.2s, transform 0.2s; }
+.rpt-card:hover .rpt-card-arrow { color: var(--accent); transform: translateX(4px); }
+</style>

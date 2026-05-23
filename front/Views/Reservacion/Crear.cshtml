@@ -1,0 +1,60 @@
+@model HotelMVC.Models.Reservacion
+@{
+    ViewData["Title"] = "Nueva Reservación";
+    var clientes  = ViewBag.Clientes  as List<HotelMVC.Models.Cliente>  ?? new();
+    var empleados = ViewBag.Empleados as List<HotelMVC.Models.Empleado> ?? new();
+    var hoteles   = ViewBag.Hoteles   as List<HotelMVC.Models.Hotel>    ?? new();
+}
+
+<div class="form-card">
+    <form asp-action="Crear" method="post">
+        <div class="form-group">
+            <label asp-for="IdCliente">Cliente</label>
+            <select asp-for="IdCliente" class="form-control">
+                <option value="">-- Seleccione cliente --</option>
+                @foreach (var c in clientes)
+                {
+                    <option value="@c.IdCliente">@c.Nombre @c.Apellido</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="IdEmpleado">Empleado</label>
+            <select asp-for="IdEmpleado" class="form-control">
+                <option value="">-- Seleccione empleado --</option>
+                @foreach (var e in empleados)
+                {
+                    <option value="@e.IdEmpleado">@e.Nombre @e.Apellido</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="IdHotel">Hotel</label>
+            <select asp-for="IdHotel" class="form-control">
+                <option value="">-- Seleccione hotel --</option>
+                @foreach (var h in hoteles)
+                {
+                    <option value="@h.IdHotel">@h.Nombre</option>
+                }
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="FechaInicio">Fecha Inicio</label>
+                <input asp-for="FechaInicio" type="date" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaFin">Fecha Fin</label>
+                <input asp-for="FechaFin" type="date" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Total">Total (Q)</label>
+            <input asp-for="Total" type="number" step="0.01" class="form-control" placeholder="0.00" />
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

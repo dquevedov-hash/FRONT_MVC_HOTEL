@@ -1,0 +1,46 @@
+@model HotelMVC.Models.Habitacion
+@{
+    ViewData["Title"] = "Editar Habitación";
+    var hoteles = ViewBag.Hoteles as List<HotelMVC.Models.Hotel> ?? new();
+    var tipos   = ViewBag.Tipos   as List<HotelMVC.Models.TipoHabitacion> ?? new();
+}
+
+<div class="form-card">
+    <form asp-action="Editar" asp-route-id="@Model.IdHabitacion" method="post">
+        <input type="hidden" asp-for="IdHabitacion" />
+        <div class="form-group">
+            <label asp-for="Numero">Número</label>
+            <input asp-for="Numero" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="IdHotel">Hotel</label>
+            <select asp-for="IdHotel" class="form-control">
+                @foreach (var h in hoteles)
+                {
+                    <option value="@h.IdHotel">@h.Nombre</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="IdTipo">Tipo de Habitación</label>
+            <select asp-for="IdTipo" class="form-control">
+                @foreach (var t in tipos)
+                {
+                    <option value="@t.IdTipo">@t.Nombre — Q@t.Precio</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Estado">Estado</label>
+            <select asp-for="Estado" class="form-control">
+                <option value="Disponible">Disponible</option>
+                <option value="Ocupada">Ocupada</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

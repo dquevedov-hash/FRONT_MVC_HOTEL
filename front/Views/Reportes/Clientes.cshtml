@@ -1,0 +1,76 @@
+@* ══════════════════════════════════════════════════════════════════
+   Views/Reportes/Clientes.cshtml
+   ══════════════════════════════════════════════════════════════════ *@
+@{
+    ViewData["Title"] = "Reporte de Clientes";
+    var datosJson = ViewBag.DatosJson as string ?? "null";
+}
+
+<div class="rpt-page">
+  <div class="rpt-page-header">
+    <div>
+      <div class="rpt-breadcrumb"><a asp-action="Index">Reportes</a> / Clientes</div>
+      <h2 class="rpt-page-title">👤 Reporte de Clientes</h2>
+      <p class="rpt-page-desc">Listado de clientes registrados con historial de reservaciones y gasto total.</p>
+    </div>
+    <div class="rpt-actions">
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportarCSV()">⬇ CSV</button>
+    </div>
+  </div>
+
+  <div id="rptContenido"><div class="rpt-loading-msg">Cargando...</div></div>
+  <div class="rpt-footer" id="rptPie" style="display:none">
+    Generado: <span id="rptFecha">—</span> · Usuario: <strong>@Context.Session.GetString("Username")</strong> · Rol: @Context.Session.GetString("Rol")
+  </div>
+</div>
+
+<script>
+const DATOS_RAW = @Html.Raw(datosJson);
+const fmtQ = n => 'Q' + Number(n||0).toFixed(2);
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!DATOS_RAW) {
+    document.getElementById('rptContenido').innerHTML = '<div class="rpt-error">❌ Sin datos.</div>';
+    return;
+  }
+  const d = DATOS_RAW;
+  const filas = (d.detalle || []).map(c => `
+    <tr>
+      <td class="td-id">${c.idCliente}</td>
+      <td class="td-name">${c.nombre} ${c.apellido}</td>
+      <td class="td-muted">${c.dpi||'—'}</td>
+      <td class="td-muted">${c.telefono||'—'}</td>
+      <td class="td-muted">${c.correo||'—'}</td>
+      <td><span class="badge ${c.totalReservaciones > 0 ? 'badge-ok' : ''}">${c.totalReservaciones}</span></td>
+      <td style="color:var(--accent);font-weight:${c.gastoTotal>0?'700':'400'}">${c.gastoTotal > 0 ? fmtQ(c.gastoTotal) : '—'}</td>
+    </tr>`).join('');
+
+  document.getElementById('rptContenido').innerHTML = `
+    <div class="rpt-kpi-grid" style="margin-bottom:20px">
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--info)">${d.totalClientes}</div><div class="kpi-lbl">Total Clientes</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--success)">${d.clientesConReservas}</div><div class="kpi-lbl">Con Reservaciones</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--accent);font-size:20px">${fmtQ(d.ingresosTotalesClientes)}</div><div class="kpi-lbl">Ingresos de Clientes</div></div>
+    </div>
+    <div class="rpt-table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Nombre</th><th>DPI</th><th>Teléfono</th><th>Correo</th><th>Reservas</th><th>Gasto Total</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table>
+    </div>`;
+
+  document.getElementById('rptFecha').textContent = new Date(d.fechaGeneracion).toLocaleString('es-GT');
+  document.getElementById('rptPie').style.display = 'block';
+});
+
+function exportarCSV() {
+  const tbl = document.querySelector('#rptContenido table');
+  if (!tbl) return;
+  const rows = [...tbl.querySelectorAll('tr')].map(tr =>
+    [...tr.querySelectorAll('th,td')].map(c=>`"${c.innerText.replace(/"/g,'""')}"`).join(','));
+  const blob = new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='clientes_'+Date.now()+'.csv'; a.click();
+}
+</script>
+<style>@@media print { .rpt-actions,.sidebar,.topbar{display:none!important;} }</style>

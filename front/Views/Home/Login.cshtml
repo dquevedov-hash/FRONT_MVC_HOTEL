@@ -1,0 +1,86 @@
+@model HotelMVC.Models.LoginRequest
+@{
+  ViewData["Title"] = "Iniciar sesión";
+  Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HotelOS — Login</title>
+  <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+<div class="login-screen">
+  <div class="login-wrap">
+
+    <div class="login-logo">
+      <h1>HOTEL<span>OS</span></h1>
+      <p>Sistema de gestión hotelera</p>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+      <div class="login-error" style="display:block">@ViewBag.Error</div>
+    }
+
+    <form asp-action="Login" method="post" id="loginForm">
+      <div class="login-label">Usuario</div>
+      <input asp-for="Username" class="login-input" id="lUser"
+             placeholder="username" autocomplete="username" />
+
+      <div class="login-label">Contraseña</div>
+      <input asp-for="Password" type="password" class="login-input" id="lPass"
+             placeholder="••••••••" autocomplete="current-password" />
+
+      <button type="submit" class="login-btn" id="lBtn">Entrar →</button>
+    </form>
+
+    <!-- Usuarios de prueba — igual que el frontend HTML -->
+    <div class="login-hint">
+      <div class="login-hint-title">Usuarios de prueba</div>
+
+      <div class="login-hint-row hint-admin"
+           onclick="fillLogin('admin','admin123')">
+        <span>admin / admin123</span>
+        <span class="login-hint-rol">Administrador</span>
+      </div>
+
+      <div class="login-hint-row hint-supervisor"
+           onclick="fillLogin('supervisor','super123')">
+        <span>supervisor / super123</span>
+        <span class="login-hint-rol">Supervisor</span>
+      </div>
+
+      <div class="login-hint-row hint-recepcion"
+           onclick="fillLogin('recepcion','recepcion123')">
+        <span>recepcion / recepcion123</span>
+        <span class="login-hint-rol">Recepcionista</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function fillLogin(user, pass) {
+    document.getElementById('lUser').value = user;
+    document.getElementById('lPass').value = pass;
+    document.getElementById('lUser').focus();
+  }
+
+  // Enter para enviar
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loginForm').submit();
+  });
+
+  // Feedback visual al enviar
+  document.getElementById('loginForm').addEventListener('submit', () => {
+    const btn = document.getElementById('lBtn');
+    btn.textContent = '...'; btn.disabled = true;
+  });
+</script>
+</body>
+</html>

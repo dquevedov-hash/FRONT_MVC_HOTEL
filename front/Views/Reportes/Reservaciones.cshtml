@@ -1,0 +1,106 @@
+@* ══════════════════════════════════════════════════════════════════
+   Views/Reportes/Reservaciones.cshtml
+   ══════════════════════════════════════════════════════════════════ *@
+@{
+    ViewData["Title"] = "Listado de Reservaciones";
+    var datosJson = ViewBag.DatosJson as string ?? "null";
+    var desde = ViewBag.Desde as string ?? "";
+    var hasta = ViewBag.Hasta as string ?? "";
+}
+
+<div class="rpt-page">
+  <div class="rpt-page-header">
+    <div>
+      <div class="rpt-breadcrumb"><a asp-action="Index">Reportes</a> / Reservaciones</div>
+      <h2 class="rpt-page-title">📋 Listado de Reservaciones</h2>
+      <p class="rpt-page-desc">Todas las reservaciones con detalle de cliente, hotel, fechas y totales.</p>
+    </div>
+    <div class="rpt-actions">
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportarCSV()">⬇ CSV</button>
+    </div>
+  </div>
+
+  <form method="get" asp-action="Reservaciones" class="rpt-filtros">
+    <div class="filtro-group">
+      <label class="field-label">Desde</label>
+      <input class="field-input" type="date" name="desde" value="@desde" />
+    </div>
+    <div class="filtro-group">
+      <label class="field-label">Hasta</label>
+      <input class="field-input" type="date" name="hasta" value="@hasta" />
+    </div>
+    <button type="submit" class="btn btn-accent">▶ Generar</button>
+    @if (!string.IsNullOrEmpty(desde) || !string.IsNullOrEmpty(hasta))
+    {
+      <a asp-action="Reservaciones" class="btn btn-ghost">✕ Limpiar</a>
+    }
+  </form>
+
+  <div id="rptContenido">
+    @if (datosJson != "null")
+    {
+      <div class="rpt-loading-msg">Procesando datos...</div>
+    }
+    else
+    {
+      <div class="rpt-welcome-small"><p>Aplica un filtro de fechas o presiona <strong>▶ Generar</strong> para ver todas.</p></div>
+    }
+  </div>
+  <div class="rpt-footer" id="rptPie" style="display:none">
+    Generado: <span id="rptFecha">—</span> · Usuario: <strong>@Context.Session.GetString("Username")</strong>
+  </div>
+</div>
+
+<script>
+const DATOS_RAW = @Html.Raw(datosJson);
+document.addEventListener('DOMContentLoaded', () => { if (DATOS_RAW) renderReporte(DATOS_RAW); });
+const fmtQ = n => 'Q' + Number(n||0).toFixed(2);
+
+function renderReporte(d) {
+  const filas = (d.detalle || []).map(r => `
+    <tr>
+      <td class="td-id">${r.idReservacion}</td>
+      <td class="td-name">${r.cliente}</td>
+      <td class="td-muted">${r.hotel}</td>
+      <td class="td-muted">${r.empleado}</td>
+      <td class="td-muted">${r.fechaInicio}</td>
+      <td class="td-muted">${r.fechaFin}</td>
+      <td>${r.noches}</td>
+      <td style="color:var(--accent);font-weight:700">${fmtQ(r.total)}</td>
+    </tr>`).join('');
+
+  document.getElementById('rptContenido').innerHTML = `
+    <div class="rpt-kpi-grid" style="margin-bottom:20px">
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--info)">${d.totalReservaciones}</div><div class="kpi-lbl">Reservaciones</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--accent);font-size:22px">${fmtQ(d.ingresoTotal)}</div><div class="kpi-lbl">Ingresos</div></div>
+    </div>
+    <div class="rpt-table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Cliente</th><th>Hotel</th><th>Empleado</th><th>Inicio</th><th>Fin</th><th>Noches</th><th>Total</th></tr></thead>
+        <tbody>${filas || '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin reservaciones</td></tr>'}</tbody>
+        <tfoot><tr>
+          <td colspan="7" style="text-align:right;font-size:11px;color:var(--muted2)">TOTAL</td>
+          <td style="color:var(--accent);font-weight:700;font-size:16px">${fmtQ(d.ingresoTotal)}</td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+  document.getElementById('rptFecha').textContent = new Date(d.fechaGeneracion).toLocaleString('es-GT');
+  document.getElementById('rptPie').style.display = 'block';
+}
+function exportarCSV() {
+  const tbl = document.querySelector('#rptContenido table');
+  if (!tbl) return;
+  const rows = [...tbl.querySelectorAll('tr')].map(tr =>
+    [...tr.querySelectorAll('th,td')].map(c=>`"${c.innerText.replace(/"/g,'""')}"`).join(','));
+  const blob = new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='reservaciones_'+Date.now()+'.csv'; a.click();
+}
+</script>
+<style>
+.rpt-filtros { display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:16px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px; }
+.filtro-group { display:flex;flex-direction:column;gap:6px; }
+.rpt-welcome-small { padding:32px;text-align:center;color:var(--muted2);font-size:13px; }
+@@media print { .rpt-actions,.rpt-filtros,.sidebar,.topbar{display:none!important;} }
+</style>

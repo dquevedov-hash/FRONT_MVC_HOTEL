@@ -1,0 +1,24 @@
+@model HotelMVC.Models.Hotel
+@{ ViewData["Title"] = "Editar Hotel"; }
+
+<div class="form-card">
+    <form asp-action="Editar" asp-route-id="@Model.IdHotel" method="post">
+        <input type="hidden" asp-for="IdHotel" />
+        <div class="form-group">
+            <label asp-for="Nombre">Nombre</label>
+            <input asp-for="Nombre" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Direccion">Dirección</label>
+            <input asp-for="Direccion" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Telefono">Teléfono</label>
+            <input asp-for="Telefono" class="form-control" />
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

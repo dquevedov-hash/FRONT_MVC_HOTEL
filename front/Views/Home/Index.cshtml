@@ -1,0 +1,331 @@
+@{
+  ViewData["Title"] = "Dashboard";
+  var rol      = Context.Session.GetString("Rol") ?? "";
+  var username = Context.Session.GetString("Username") ?? "";
+
+  bool esAdmin      = rol == "Administrador";
+  bool esSupervisor = rol == "Supervisor";
+  bool esRecepcion  = rol == "Recepcionista";
+}
+
+@* ══════════════════════════════════════════════════════
+   DASHBOARD ADMINISTRADOR — ve todo, stats globales
+   ══════════════════════════════════════════════════════ *@
+@if (esAdmin)
+{
+  <div id="dash-admin">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Hoteles</div>
+        <div class="stat-value" id="s-hoteles">—</div>
+        <div class="stat-icon">🏨</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Habitaciones</div>
+        <div class="stat-value" id="s-habitaciones">—</div>
+        <div class="stat-icon">🛏</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Clientes</div>
+        <div class="stat-value" id="s-clientes">—</div>
+        <div class="stat-icon">👤</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Empleados</div>
+        <div class="stat-value" id="s-empleados">—</div>
+        <div class="stat-icon">👔</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reservaciones</div>
+        <div class="stat-value" id="s-reservaciones">—</div>
+        <div class="stat-icon">📋</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Últimas Reservaciones</span>
+          <a asp-controller="Reservacion" asp-action="Index"
+             class="btn btn-ghost btn-sm">ver todas</a>
+        </div>
+        <div id="dash-reserv-list">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Cargando...</div>
+        </div>
+      </div>
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Estado Habitaciones</span>
+        </div>
+        <div id="dash-hab-estado">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@* ══════════════════════════════════════════════════════
+   DASHBOARD SUPERVISOR — métricas y acceso a reportes
+   ══════════════════════════════════════════════════════ *@
+@if (esSupervisor)
+{
+  <div id="dash-supervisor">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Disponibles</div>
+        <div class="stat-value" id="r-disponibles" style="color:var(--success)">—</div>
+        <div class="stat-icon">🟢</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ocupadas</div>
+        <div class="stat-value" id="r-ocupadas" style="color:var(--danger)">—</div>
+        <div class="stat-icon">🔴</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Mantenimiento</div>
+        <div class="stat-value" id="r-mantenimiento" style="color:var(--warn)">—</div>
+        <div class="stat-icon">🔧</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">% Ocupación</div>
+        <div class="stat-value" id="r-ocupacion" style="color:var(--rol-color)">—</div>
+        <div class="stat-icon">📊</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ingresos</div>
+        <div class="stat-value" id="r-ingresos" style="font-size:20px;color:var(--rol-color)">—</div>
+        <div class="stat-icon">💰</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Resumen operativo</span>
+        </div>
+        <div class="dash-row">
+          <span class="dash-row-label">Reservaciones totales</span>
+          <span class="dash-row-value" id="r-reservaciones">—</span>
+        </div>
+        <div class="dash-row">
+          <span class="dash-row-label">Clientes registrados</span>
+          <span class="dash-row-value" id="r-clientes">—</span>
+        </div>
+      </div>
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Acceso rápido</span>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:8px">
+          <a asp-controller="Reportes" asp-action="Ocupacion"
+             class="btn btn-info" style="justify-content:center">
+            📊 Reporte de Ocupación
+          </a>
+          <a asp-controller="Reportes" asp-action="Ingresos"
+             class="btn btn-info" style="justify-content:center">
+            💰 Reporte de Ingresos
+          </a>
+          <a asp-controller="Habitacion" asp-action="Index"
+             class="btn btn-ghost" style="justify-content:center">
+            🛏 Ver Habitaciones
+          </a>
+          <a asp-controller="Reservacion" asp-action="Index"
+             class="btn btn-ghost" style="justify-content:center">
+            📋 Ver Reservaciones
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@* ══════════════════════════════════════════════════════
+   DASHBOARD RECEPCIONISTA — trabajo diario
+   ══════════════════════════════════════════════════════ *@
+@if (esRecepcion)
+{
+  <div id="dash-recepcion">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Hab. Disponibles</div>
+        <div class="stat-value" id="rc-disponibles" style="color:var(--success)">—</div>
+        <div class="stat-icon">🛏</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reservaciones</div>
+        <div class="stat-value" id="rc-reservaciones">—</div>
+        <div class="stat-icon">📋</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Clientes</div>
+        <div class="stat-value" id="rc-clientes">—</div>
+        <div class="stat-icon">👤</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Últimas Reservaciones</span>
+          <a asp-controller="Reservacion" asp-action="Index"
+             class="btn btn-ghost btn-sm">gestionar</a>
+        </div>
+        <div id="rc-reserv-list">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Cargando...</div>
+        </div>
+      </div>
+      <div class="dash-block">
+        <div class="dash-block-head">
+          <span class="dash-block-title">Habitaciones Disponibles</span>
+        </div>
+        <div id="rc-hab-list">
+          <div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Cargando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas recepcionista -->
+    <div class="quick-actions" style="margin-top:16px">
+      <a asp-controller="Reservacion" asp-action="Create"
+         class="btn btn-accent" style="flex:1;justify-content:center;padding:14px">
+        + Nueva Reservación
+      </a>
+      <a asp-controller="Cliente" asp-action="Create"
+         class="btn btn-ghost" style="flex:1;justify-content:center;padding:14px">
+        + Nuevo Cliente
+      </a>
+    </div>
+  </div>
+}
+
+<!-- ── JS: carga datos del dashboard vía API ─────────────── -->
+<script>
+const API = '@(ViewBag.ApiBase ?? "http://localhost:5000/api")';
+const ROL  = '@rol';
+
+const fmtQ    = n => 'Q' + Number(n||0).toFixed(2);
+const byId    = id => document.getElementById(id);
+
+async function apiFetch(path) {
+  const res = await fetch(API + path);
+  if (!res.ok) throw new Error(res.status);
+  return res.json();
+}
+
+// ── Admin ────────────────────────────────────────────────
+async function loadAdmin() {
+  try {
+    const [hoteles, habitaciones, clientes, empleados, reservaciones] = await Promise.all([
+      apiFetch('/hotel'), apiFetch('/habitacion'),
+      apiFetch('/cliente'), apiFetch('/empleado'), apiFetch('/reservacion'),
+    ]);
+
+    byId('s-hoteles').textContent       = hoteles.length;
+    byId('s-habitaciones').textContent  = habitaciones.length;
+    byId('s-clientes').textContent      = clientes.length;
+    byId('s-empleados').textContent     = empleados.length;
+    byId('s-reservaciones').textContent = reservaciones.length;
+
+    // Últimas 5 reservaciones
+    const hotelMap = Object.fromEntries(hoteles.map(h => [h.idHotel, h.nombre]));
+    const clientMap = Object.fromEntries(clientes.map(c => [c.idCliente, `${c.nombre} ${c.apellido}`]));
+    const recientes = [...reservaciones].reverse().slice(0,5);
+
+    byId('dash-reserv-list').innerHTML = recientes.length === 0
+      ? '<div class="empty"><p>Sin reservaciones</p></div>'
+      : recientes.map(r => `
+          <div class="dash-row">
+            <div>
+              <div class="dash-row-label">${clientMap[r.idCliente] || '#'+r.idCliente}</div>
+              <div class="dash-row-meta">${r.fechaInicio} → ${r.fechaFin}</div>
+            </div>
+            <div class="dash-row-value">${fmtQ(r.total)}</div>
+          </div>`).join('');
+
+    // Estado habitaciones
+    const BADGE = { Disponible:'badge-ok', Ocupada:'badge-ocu', Mantenimiento:'badge-man' };
+    const stats = [
+      { label:'Disponibles',   val: habitaciones.filter(h=>h.estado==='Disponible').length,   cls:'badge-ok' },
+      { label:'Ocupadas',      val: habitaciones.filter(h=>h.estado==='Ocupada').length,       cls:'badge-ocu' },
+      { label:'Mantenimiento', val: habitaciones.filter(h=>h.estado==='Mantenimiento').length, cls:'badge-man' },
+    ];
+    byId('dash-hab-estado').innerHTML = stats.map(s => `
+      <div class="dash-row">
+        <span class="dash-row-label">${s.label}</span>
+        <span class="badge ${s.cls}">${s.val}</span>
+      </div>`).join('');
+
+  } catch(e) { console.error('Dashboard admin:', e); }
+}
+
+// ── Supervisor ───────────────────────────────────────────
+async function loadSupervisor() {
+  try {
+    const [habitaciones, reservaciones, clientes] = await Promise.all([
+      apiFetch('/habitacion'), apiFetch('/reservacion'), apiFetch('/cliente'),
+    ]);
+    const disp = habitaciones.filter(h=>h.estado==='Disponible').length;
+    const ocup = habitaciones.filter(h=>h.estado==='Ocupada').length;
+    const mant = habitaciones.filter(h=>h.estado==='Mantenimiento').length;
+    const pct  = habitaciones.length ? Math.round(ocup/habitaciones.length*100) : 0;
+    const totalIngresos = reservaciones.reduce((s,r)=>s+Number(r.total||0),0);
+
+    byId('r-disponibles').textContent   = disp;
+    byId('r-ocupadas').textContent      = ocup;
+    byId('r-mantenimiento').textContent = mant;
+    byId('r-ocupacion').textContent     = pct + '%';
+    byId('r-ingresos').textContent      = fmtQ(totalIngresos);
+    byId('r-reservaciones').textContent = reservaciones.length;
+    byId('r-clientes').textContent      = clientes.length;
+  } catch(e) { console.error('Dashboard supervisor:', e); }
+}
+
+// ── Recepcionista ────────────────────────────────────────
+async function loadRecepcion() {
+  try {
+    const [habitaciones, reservaciones, clientes, hoteles] = await Promise.all([
+      apiFetch('/habitacion'), apiFetch('/reservacion'),
+      apiFetch('/cliente'), apiFetch('/hotel'),
+    ]);
+    const hotelMap  = Object.fromEntries(hoteles.map(h=>[h.idHotel, h.nombre]));
+    const clientMap = Object.fromEntries(clientes.map(c=>[c.idCliente, `${c.nombre} ${c.apellido}`]));
+
+    byId('rc-disponibles').textContent   = habitaciones.filter(h=>h.estado==='Disponible').length;
+    byId('rc-reservaciones').textContent = reservaciones.length;
+    byId('rc-clientes').textContent      = clientes.length;
+
+    // Últimas 5 reservaciones
+    const fmtQ = n => 'Q' + Number(n||0).toFixed(2);
+    const recientes = [...reservaciones].reverse().slice(0,5);
+    byId('rc-reserv-list').innerHTML = recientes.length === 0
+      ? '<div class="empty"><p>Sin reservaciones</p></div>'
+      : recientes.map(r => `
+          <div class="dash-row">
+            <div>
+              <div class="dash-row-label">${clientMap[r.idCliente] || '#'+r.idCliente}</div>
+              <div class="dash-row-meta">${hotelMap[r.idHotel]||''} · ${r.fechaInicio}</div>
+            </div>
+            <div class="dash-row-value">${fmtQ(r.total)}</div>
+          </div>`).join('');
+
+    // Habitaciones disponibles
+    const disponibles = habitaciones.filter(h=>h.estado==='Disponible').slice(0,5);
+    byId('rc-hab-list').innerHTML = disponibles.length === 0
+      ? '<div class="empty"><p>Sin habitaciones disponibles</p></div>'
+      : disponibles.map(h => `
+          <div class="dash-row">
+            <span class="dash-row-label">Hab. ${h.numero}</span>
+            <span class="badge badge-ok">Disponible</span>
+          </div>`).join('');
+
+  } catch(e) { console.error('Dashboard recepcion:', e); }
+}
+
+// Llamar el loader del rol correspondiente
+document.addEventListener('DOMContentLoaded', () => {
+  if (ROL === 'Administrador')  loadAdmin();
+  if (ROL === 'Supervisor')     loadSupervisor();
+  if (ROL === 'Recepcionista')  loadRecepcion();
+});
+</script>
